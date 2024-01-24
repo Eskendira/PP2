@@ -1,1 +1,1 @@
-cvbn
+print("Hello World")
