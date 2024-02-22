@@ -1,4 +1,4 @@
-import json
+import json 
 
 file=open("1.json")
 data=json.load(file)
