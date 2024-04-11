@@ -1,116 +1,65 @@
 import pygame
+import sys
 
 pygame.init()
 
-WIDTH = 800
-HEIGHT = 600
+# Set up the drawing window
+screen = pygame.display.set_mode([500, 500])
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-base_layer = pygame.Surface((WIDTH, HEIGHT))
+# Set the initial color
+color = (0, 0, 0)
 
-colorRED = (255, 0, 0)
-colorBLUE = (0, 0, 255)
-colorWHITE = (255, 255, 255)
-colorBLACK = (0, 0, 0)
+# Run until the user asks to quit
+running = True
+drawing = False
+mode = "draw"  # Can be "draw", "rectangle", "circle", or "eraser"
 
-clock = pygame.time.Clock()
-
-LMBpressed = False
-RMBpressed = False
-THICKNESS = 5
-current_color = colorRED
-drawing_shape = ""
-
-currX = 0
-currY = 0
-
-prevX = 0
-prevY = 0
-
-def calculate_rect(x1, y1, x2, y2):
-    return pygame.Rect(min(x1, x2), min(y1, y2), abs(x1 - x2), abs(y1 - y2))
-
-done = False
-
-while not done:
-
+while running:
+    # Did the user click the window close button?
     for event in pygame.event.get():
-        if LMBpressed or RMBpressed:
-            screen.blit(base_layer, (0, 0))
         if event.type == pygame.QUIT:
-            done = True
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            print("LMB pressed!")
-            LMBpressed = True
-            prevX = event.pos[0]
-            prevY = event.pos[1]
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-            print("RMB pressed!")
-            RMBpressed = True
-            prevX = event.pos[0]
-            prevY = event.pos[1]
-        if event.type == pygame.MOUSEMOTION:
-            print("Position of the mouse:", event.pos)
-            if LMBpressed or RMBpressed:
-                currX = event.pos[0]
-                currY = event.pos[1]
-                if drawing_shape == "rectangle":
-                    pygame.draw.rect(screen, current_color, calculate_rect(prevX, prevY, currX, currY), THICKNESS)
-                elif drawing_shape == "circle":
-                    radius = max(abs(currX - prevX), abs(currY - prevY))
-                    pygame.draw.circle(screen, current_color, (prevX, prevY), radius, THICKNESS)
-                elif drawing_shape == "eraser":
-                    if LMBpressed:
-                        pygame.draw.circle(screen, colorWHITE, (currX, currY), THICKNESS+10)
-                    elif RMBpressed:
-                        pygame.draw.circle(base_layer, colorBLACK, (currX, currY), THICKNESS+10)
-        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            print("LMB released!")
-            LMBpressed = False
-            currX = event.pos[0]
-            currY = event.pos[1]
-            if drawing_shape == "rectangle":
-                pygame.draw.rect(screen, current_color, calculate_rect(prevX, prevY, currX, currY), THICKNESS)
-            elif drawing_shape == "circle":
-                radius = max(abs(currX - prevX), abs(currY - prevY))
-                pygame.draw.circle(screen, current_color, (prevX, prevY), radius, THICKNESS)
-            base_layer.blit(screen, (0, 0))
-        if event.type == pygame.MOUSEBUTTONUP and event.button == 3:
-            print("RMB released!")
-            RMBpressed = False
-            currX = event.pos[0]
-            currY = event.pos[1]
-            if drawing_shape == "eraser":
-                if LMBpressed:
-                    pygame.draw.circle(screen, colorWHITE, (currX, currY), THICKNESS+10)
-                elif RMBpressed:
-                    pygame.draw.circle(base_layer, colorBLACK, (currX, currY), THICKNESS+10)
-            base_layer.blit(screen, (0, 0))
-        if event.type == pygame.KEYDOWN: 
-            if event.key == pygame.K_PLUS:
-                print("increased thickness")
-                THICKNESS += 1
-            if event.key == pygame.K_MINUS:
-                print("reduced thickness")
-                THICKNESS -= 1
-            if event.key == pygame.K_r:
-                print("Drawing rectangles")
-                drawing_shape = "rectangle"
-            if event.key == pygame.K_c:
-                print("Drawing circles")
-                drawing_shape = "circle"
-            if event.key == pygame.K_e:
-                print("Using eraser")
-                drawing_shape = "eraser"
-            if event.key == pygame.K_1:
-                print("Selected RED color")
-                current_color = colorRED
-            if event.key == pygame.K_2:
-                print("Selected BLUE color")
-                current_color = colorBLUE
-            if event.key == pygame.K_3:
-                print("Selected WHITE color")
-                current_color = colorWHITE
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if mode == "draw":
+                drawing = True
+                pygame.draw.circle(screen, color, event.pos, 5)
+            elif mode == "rectangle":
+                start_pos = event.pos
+            elif mode == "circle":
+                center_pos = event.pos
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if mode == "rectangle":
+                end_pos = event.pos
+                pygame.draw.rect(screen, color, pygame.Rect(start_pos, (end_pos[0] - start_pos[0], end_pos[1] - start_pos[1])))
+            elif mode == "circle":
+                radius = int(((center_pos[0] - event.pos[0]) ** 2 + (center_pos[1] - event.pos[1]) ** 2) ** 0.5)
+                pygame.draw.circle(screen, color, center_pos, radius)
+            drawing = False
+        elif event.type == pygame.MOUSEMOTION:
+            if drawing and mode == "draw":
+                pygame.draw.circle(screen, color, event.pos, 5)
+            elif mode == "eraser":
+                pygame.draw.circle(screen, (255, 255, 255), event.pos, 10)
 
+        # Change modes based on key presses
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                mode = "rectangle"
+            elif event.key == pygame.K_c:
+                mode = "circle"
+            elif event.key == pygame.K_e:
+                mode = "eraser"
+            elif event.key == pygame.K_d:
+                mode = "draw"
+            elif event.key == pygame.K_1:
+                color = (255, 0, 0)  # Red
+            elif event.key == pygame.K_2:
+                color = (0, 255, 0)  # Green
+            elif event.key == pygame.K_3:
+                color = (0, 0, 255)  # Blue
+
+    # Flip the display
     pygame.display.flip()
-    clock.tick(60)
+
+# Done! Time to quit.
+pygame.quit()
