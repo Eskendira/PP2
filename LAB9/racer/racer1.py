@@ -156,7 +156,7 @@ while True:
 
     if pygame.sprite.spritecollideany(P1, coins):
         pygame.mixer.Sound('coinss.wav').play()
-        SCORE += 1
+        SCORE += random.randint(1,3)
         C.move()
 
         if SCORE >= N:

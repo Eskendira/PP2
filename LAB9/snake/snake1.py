@@ -97,7 +97,7 @@ class Food:
         self.timer -= 1
         if self.timer <= 0:
             self.pos = self.generate_random_position()
-            self.timer = random.randint(10, 20)  # Reset timer
+            self.timer = random.randint(20, 30)  # Reset timer
 
 FPS = 8
 clock = pygame.time.Clock()
@@ -133,7 +133,7 @@ while not done:
 
     snake.move()
     if snake.check_collision(food):
-        score += 1
+        score += random.randint(1,3)
         if score % 3 == 0:
             level += 1
             FPS += 1

@@ -31,7 +31,7 @@ def calculate_rect(x1, y1, x2, y2):
     return pygame.Rect(min(x1, x2), min(y1, y2), abs(x1 - x2), abs(y1 - y2))
 
 def draw_shapes():
-    global LMBpressed, RMBpressed, drawing_shape, prevX, prevY, current_color
+    global LMBpressed, RMBpressed, drawing_shape, prevX, prevY, current_color, THICKNESS
 
     if LMBpressed or RMBpressed:
         screen.blit(base_layer, (0, 0))
