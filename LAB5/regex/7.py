@@ -13,5 +13,4 @@ while(i != len(snake)):
     else:
         camel = camel + snake[i]
         i = i + 1
-#camel = re.sub
 print(camel)

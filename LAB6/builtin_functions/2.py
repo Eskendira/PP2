@@ -7,4 +7,6 @@ def calc_up_low_case(str):
     return up_count,low_count
 
 str = "NUray NuRlaNkyzy"
-calc_up_low_case()
+upper,lower = calc_up_low_case(str)
+
+print()
