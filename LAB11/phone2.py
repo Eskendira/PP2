@@ -2,7 +2,7 @@ import csv
 import psycopg2 as pgsql
 
 
-connection = pgsql.connect(host="localhost", dbname="lab11", user="postgres",
+connection = pgsql.connect(host="localhost", dbname="phone", user="postgres",
                            password="08082006", port=5432)
 cur = connection.cursor()
 
@@ -71,11 +71,12 @@ while True:
         break
     print("enter the name of the file")
     mode=input()
-    with open(mode+'.csv', 'r') as f:
+    with open("C:/Users/Nurai/PP2/LAB11/data.csv", 'r') as f:
         reader = csv.reader(f)
         next(reader)
         for row in reader:
             cur.execute("INSERT INTO PhoneBook VALUES (%s,%s,%s)",row)
+
 
 
 
